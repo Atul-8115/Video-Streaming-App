@@ -7,6 +7,17 @@ dotenv.config({
 })
 
 
+/*   Connecting DB using IIFE   */
+// ( async () => {
+//     try {
+//        await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`) 
+//        console.log("DB is connected successfully");
+//     } catch (error) {
+//         console.log("ERR: ",error);
+//         throw error
+//     }
+// })()
+
 connectDB()
 .then(() => {
     app.on("error", (error) => {
