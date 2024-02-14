@@ -1,6 +1,6 @@
 import dotenv from "dotenv"
 import connectDB from "./db/index.js";
-import { app } from "./app.js";
+import { app }  from "./app.js";
 
 dotenv.config({
     path: './env'
@@ -17,6 +17,8 @@ dotenv.config({
 //         throw error
 //     }
 // })()
+
+// Async function always returns a promise so it is better to use then, catch block
 
 connectDB()
 .then(() => {
