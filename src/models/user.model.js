@@ -9,7 +9,7 @@ const userSchema = new Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        index: true,
+        index: true, // for making searching easy
     },
     email: {
         type: String,
@@ -44,20 +44,38 @@ const userSchema = new Schema({
     }
 },{timestamps: true})
 
+
+// Encrypts the password
+
+
+// userSchema.pre("save", async function (next) {
+//     if(!this.isModified("password")) return next();
+//     this.password = bcrypt.hash(this.password, 10)
+//     next() 
+// })
+
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password")) return next();
-    this.password = bcrypt.hash(this.password, 10)
+    this.password = bcrypt.hash(this.password,10)
     next()
 })
 
+
+
 // Verifying the password
-userSchema.methods.isPasswrodCorrect = async function(password){
-    return await bcrypt.compare(password, this.password)
+userSchema.methods.isPasswordCorrect = async function (password) {
+    return await bcrypt.compare(password,this.password)
 }
+
+
+// userSchema.methods.isPasswrodCorrect = async function(password){
+//     return await bcrypt.compare(password, this.password)
+// }
 
 userSchema.methods.generateAccessToken = function() {
     return jwt.sign(
         {
+            // These all are payloads
             _id: this._id,
             email: this.email,
             username: this.username,
