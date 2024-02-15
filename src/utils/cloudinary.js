@@ -28,4 +28,4 @@ cloudinary.v2.uploader.upload("",
    { public_id: ""},
    function(error, result) {console.log(result); });
 
-   export {uploadOnCloudinary}
+   export { uploadOnCloudinary }
