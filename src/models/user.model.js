@@ -32,7 +32,7 @@ const userSchema = new Schema({
         type: String,
     },
     watchHistory: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Video",
     },
     password: {
@@ -56,6 +56,7 @@ const userSchema = new Schema({
 
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password")) return next();
+    
     this.password = await bcrypt.hash(this.password,10)
     next()
 })
