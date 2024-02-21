@@ -161,8 +161,8 @@ const logoutUser = asyncHandler(async (req,res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1,
             }
         },
         {
@@ -243,7 +243,7 @@ const changeCurrentPassword = asyncHandler(async(req,res) => {
 const getCurrentUser = asyncHandler( async (req,res) => {
     return res
     .status(200)
-    .json(new ApiResponse(200, "Fetched current user successfully"))
+    .json(new ApiResponse(200,req.user, "Fetched current user successfully"))
 })
 
 const updateAccountDetails = asyncHandler(async (req,res) => {
@@ -410,7 +410,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
     const user = await User.aggregate([
         {
             $match: {
-                _id: new mongoose.Types.createFromHexString(req.user._id)
+                _id: new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
@@ -424,7 +424,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
                         $lookup: {
                             from: "users",
                             localField: "owner",
-                            foreignField: _id,
+                            foreignField: "_id",
                             as: "owner",
                             pipeline: [
                                 {
@@ -440,7 +440,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
                     {
                         $addFields: {
                             owner: {
-                                $fiest: "$owner"
+                                $first: "$owner"
                             }
                         }
                     }
@@ -449,6 +449,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
         }
     ])
 
+    // console.log(user[0]);
     return res
     .status(200)
     .json(
