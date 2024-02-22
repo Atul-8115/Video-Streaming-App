@@ -1,9 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js"
 import { User } from "../models/user.model.js"
-import { uploadOnCloudinary } from "../utils/cloudinary.js"
+import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/AppResponse.js"
 import mongoose from "mongoose";
+// import cloudinary from "cloudinary"
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -270,7 +271,25 @@ const updateAccountDetails = asyncHandler(async (req,res) => {
 })
 
 const updateUserAvatar = asyncHandler(async (req,res) => {
-    
+
+
+    const oldId = req.user._id
+
+    console.log("Id of the existing user ",oldId);
+
+    const existingUser = await User.findById(oldId)
+    const oldAvatar = existingUser.avatar
+    console.log("Checking who is in oldAvatar ", existingUser);
+
+    const result = await deleteFromCloudinary(oldAvatar);
+
+    console.log("I am at line 286 ",result);
+
+    // if(result.result === "ok") {
+    //     res.status(200).json(new ApiResponse(200,"Deleted from cloudinary"))
+    // } else {
+    //     throw new ApiError(401,"Failed to delete");
+    // }
     const avatarLocalPath = req.file?.path
 
     if(!avatarLocalPath) {
@@ -284,6 +303,8 @@ const updateUserAvatar = asyncHandler(async (req,res) => {
     if(!avatar.url) {
         throw new ApiError(400, "Error while uploading avatar")
     }
+
+    console.log("Printing the avatar ",avatar);
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,

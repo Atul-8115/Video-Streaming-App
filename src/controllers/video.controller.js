@@ -14,6 +14,8 @@ const getAllVideos = asyncHandler(async (req,res) => {
 const publishVideo = asyncHandler(async (req,res) => {
     const { title, description } =  req.body
 
+    console.log(title," ", description);
+
     if(!title && !description) {
         throw new ApiError(400,"Title and description are required")
     }
@@ -41,15 +43,15 @@ const publishVideo = asyncHandler(async (req,res) => {
         throw new ApiError(401,"Thumnail is required to upload")
     }
 
-    console.log("Checking what is coming in video and thumbnail :- ",video," ",thumbnail);
+    // console.log("Checking what is coming in video and thumbnail :- ",video," ",thumbnail);
 
     const videoUrl = video.secure_url
     const thumbnailUrl = thumbnail.secure_url
 
-    console.log("printing url of uploaded video and thumnail ", videoUrl," ",thumbnailUrl);
+    // console.log("printing url of uploaded video and thumnail ", videoUrl," ",thumbnailUrl);
 
     const duration = video.duration
-    console.log("Duration of the video is -> ",duration);
+    // console.log("Duration of the video is -> ",duration);
 
     const uploadedVideo = await Video.create({
         videoFile: videoUrl,
@@ -65,12 +67,29 @@ const publishVideo = asyncHandler(async (req,res) => {
         throw new ApiError(500, "Something went wrong")
     }
 
-    console.log("Seeing what is in uploadedVideo ", uploadedVideo);
+    // console.log("Seeing what is in uploadedVideo ", uploadedVideo);
     return res
     .status(201)
     .json(new ApiResponse(201, uploadedVideo, "Video published successfully"))
 })
+
+const getVideoById = asyncHandler(async (req,res) => {
+    const { videoId } = req.params
+    console.log(videoId);
+
+    const video = await Video.findById(videoId)
+    console.log("Here coming video from DB");
+
+    if(!video) {
+        throw new ApiError(401,"Video is not present ")
+    }
+
+    return res
+           .status(200)
+           .json(new ApiResponse(201,video,"Video fetched successfully"))
+})
 export {
     getAllVideos,
-    publishVideo
+    publishVideo,
+    getVideoById
 }
