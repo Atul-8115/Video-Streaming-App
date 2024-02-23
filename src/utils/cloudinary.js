@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs"
+import { asyncHandler } from "./asyncHandler.js";
 
 
 cloudinary.config({ 
@@ -8,7 +9,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = asyncHandler (async (localFilePath) => {
     try {
         if (!localFilePath) return null
         //upload the file on cloudinay
@@ -24,20 +25,22 @@ const uploadOnCloudinary = async (localFilePath) => {
         fs.unlinkSync(localFilePath) // remove the locally saved file as the upload operation got failed
         return null
     }
-}
+})
 
-const deleteFromCloudinary = async (oldFilePath) => {
+const deleteFromCloudinary = asyncHandler(async (oldFilePath) => {
     try {
+
+        console.log(oldFilePath);
         const result = await cloudinary.uploader.destroy(oldFilePath)
-
-        console.log("Result ",result);
-
+        console.log("Printing result ", result);
         return result;
+
     } catch (error) {
+        console.log(oldFilePath);
         console.log(error);
         return;
     }
-}
+})
 // cloudinary.v2.uploader.upload("",{ public_id: ""},
 //    function(error, result) {console.log(result); 
 // });

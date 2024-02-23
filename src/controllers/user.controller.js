@@ -272,31 +272,28 @@ const updateAccountDetails = asyncHandler(async (req,res) => {
 
 const updateUserAvatar = asyncHandler(async (req,res) => {
 
-
     const oldId = req.user._id
-
-    console.log("Id of the existing user ",oldId);
 
     const existingUser = await User.findById(oldId)
     const oldAvatar = existingUser.avatar
-    console.log("Checking who is in oldAvatar ", existingUser);
+    // await User.deleteOne({oldAvatar})
+    const urlArray = oldAvatar.split("/");
+    const imageName = urlArray[urlArray.length-1]?.split(".")[0];
+    const result = await deleteFromCloudinary(imageName);
 
-    const result = await deleteFromCloudinary(oldAvatar);
+    if(result.result !== 'ok') {
+        throw new ApiError(501,"Something went wrong")
+    }
 
-    console.log("I am at line 286 ",result);
 
-    // if(result.result === "ok") {
-    //     res.status(200).json(new ApiResponse(200,"Deleted from cloudinary"))
-    // } else {
-    //     throw new ApiError(401,"Failed to delete");
-    // }
+
     const avatarLocalPath = req.file?.path
 
     if(!avatarLocalPath) {
         throw new ApiError(400, "Avatar is required")
     }
 
-    // TODO delete old image - assignment
+    // TODO delete old image - assignment -> Completed
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
