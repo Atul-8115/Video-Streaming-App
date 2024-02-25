@@ -56,9 +56,10 @@ const registerUser = asyncHandler( async (req,res) => {
 
 
     // console log kro
-    // console.log("Checking what is coming in req.files ",req.files);
+    console.log("Checking what is coming in req.files ",req.files);
     const avatarLocalPath = req.files?.avatar[0]?.path
     // const coverImageLocalPath = req.files?.coverImage[0]?.path
+    console.log("avatarLocalPath ",avatarLocalPath);
 
     let coverImageLocalPath;
     if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
@@ -276,6 +277,8 @@ const updateUserAvatar = asyncHandler(async (req,res) => {
 
     const existingUser = await User.findById(oldId)
     const oldAvatar = existingUser.avatar
+
+    // console.log("Printng old avatar", oldAvatar);
     // await User.deleteOne({oldAvatar})
     const urlArray = oldAvatar.split("/");
     const imageName = urlArray[urlArray.length-1]?.split(".")[0];
@@ -301,7 +304,7 @@ const updateUserAvatar = asyncHandler(async (req,res) => {
         throw new ApiError(400, "Error while uploading avatar")
     }
 
-    console.log("Printing the avatar ",avatar);
+    // console.log("Printing the avatar ",avatar);
 
     const user = await User.findByIdAndUpdate(
         req.user?._id,

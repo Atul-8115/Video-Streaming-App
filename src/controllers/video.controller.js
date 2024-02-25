@@ -20,10 +20,12 @@ const publishVideo = asyncHandler(async (req,res) => {
         throw new ApiError(400,"Title and description are required")
     }
 
-    // console.log("I am at line 23");
+    console.log("I am at line 23");
+
+    console.log(req.files);
 
     const videoLocalPath = req.files?.videoFile[0]?.path
-    // console.log("I am at line 26");
+    console.log("I am at line 26");
     const thumbnailLocalPath = req.files?.thumbnail[0]?.path
 
     if(!videoLocalPath) {
@@ -96,37 +98,38 @@ const updateVideo = asyncHandler(async (req,res) => {
     const { videoId } = req.params
     const { title, description } = req.body
 
-    // const videoDetails = await Video.findById(videoId)
+    const videoDetails = await Video.findById(videoId)
 
-    // const oldThumbnail = videoDetails?.thumbnail
+    const oldThumbnail = videoDetails?.thumbnail
 
-    // if(!oldThumbnail) {
-    //     throw new ApiError(500,"Something went wrong at line 104")
-    // }
+    if(!oldThumbnail) {
+        throw new ApiError(500,"Something went wrong at line 104")
+    }
 
-    // const urlArray = oldThumbnail.split('/');
+    const urlArray = oldThumbnail.split('/');
 
-    // const oldImageName = urlArray[urlArray.length-1]?.split('.')[0]
+    const oldImageName = urlArray[urlArray.length-1]?.split('.')[0]
 
-    // if(!oldImageName) {
-    //     throw new ApiError(500,"Something went wrong at line 112")
-    // }
+    if(!oldImageName) {
+        console.log(oldImageName);
+        throw new ApiError(500,"Something went wrong at line 112")
+    }
 
     // console.log("Old Image printing ",oldImageName);
 
-    // const result = deleteFromCloudinary(oldImageName)
+    const result = await deleteFromCloudinary(oldImageName)
 
-    // // console.log("printing result ",result);
+    // console.log("printing result ",result);
 
-    // if(result.result !== 'ok') {
-    //     throw new ApiError(500, "Something went wrong at line 118")
-    // }
+    if(result.result !== 'ok') {
+        throw new ApiError(500, "Something went wrong at line 118")
+    }
 
     const thumbnail = req.file?.path
 
     console.log(thumbnail);
 
-    const uploadedImageUrl =  uploadOnCloudinary(thumbnail)
+    const uploadedImageUrl =  await uploadOnCloudinary(thumbnail)
 
     if(!uploadedImageUrl) {
         throw new ApiError(500,"Something went wrong while uploading thumbnail at line 126")
@@ -155,7 +158,7 @@ const updateVideo = asyncHandler(async (req,res) => {
 })
 
 const deleteVideo = asyncHandler(async (req,res) => {
-
+    
 })
 
 
