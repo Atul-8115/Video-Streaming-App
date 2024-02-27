@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/AppResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { v2 as cloudinary } from "cloudinary"
 
 
 
@@ -14,18 +15,18 @@ const getAllVideos = asyncHandler(async (req,res) => {
 const publishVideo = asyncHandler(async (req,res) => {
     const { title, description } =  req.body
 
-    console.log(title," ", description);
+    // console.log(title," ", description);
 
     if(!title && !description) {
         throw new ApiError(400,"Title and description are required")
     }
 
-    console.log("I am at line 23");
+    // console.log("I am at line 23");
 
-    console.log(req.files);
+    // console.log(req.files);
 
     const videoLocalPath = req.files?.videoFile[0]?.path
-    console.log("I am at line 26");
+    // console.log("I am at line 26");
     const thumbnailLocalPath = req.files?.thumbnail[0]?.path
 
     if(!videoLocalPath) {
@@ -36,7 +37,7 @@ const publishVideo = asyncHandler(async (req,res) => {
         throw new ApiError(400, "Thumnail is not present")
     }
 
-    console.log("Local path of the video:- ",videoLocalPath," Local path of thumbnail ",thumbnailLocalPath)
+    // console.log("Local path of the video:- ",videoLocalPath," Local path of thumbnail ",thumbnailLocalPath)
     const video = await uploadOnCloudinary(videoLocalPath)
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
 
@@ -83,7 +84,7 @@ const getVideoById = asyncHandler(async (req,res) => {
     console.log(videoId);
 
     const video = await Video.findById(videoId)
-    console.log("Here coming video from DB");
+    // console.log("Here coming video from DB");
 
     if(!video) {
         throw new ApiError(401,"Video is not present ")
@@ -158,7 +159,38 @@ const updateVideo = asyncHandler(async (req,res) => {
 })
 
 const deleteVideo = asyncHandler(async (req,res) => {
-    
+    const { videoId } = req.params
+    const video = await Video.findById(videoId)
+
+
+    if(!video) {
+        throw new ApiError(401,"Video you want to delete is not present")
+    }
+    console.log(video);
+    const thumbnail = video.thumbnail
+    const thumbnailArray = thumbnail.split('/')
+    console.log(thumbnailArray);
+    const thumbnailName = thumbnailArray[thumbnailArray.length-1].split('.')[0]
+
+    const videoToBeDeleted = video.videoFile
+    const videoArray = videoToBeDeleted.split('/')
+    const videoName = videoArray[videoArray.length-1].split('.')[0]
+
+    await cloudinary.uploader.destroy(videoName, {resource_type: 'video'})
+
+
+
+    await cloudinary.uploader.destroy(thumbnailName, {resource_type: 'image'})
+
+    const deleted = await Video.findByIdAndDelete(videoId)
+
+    if(!deleted) {
+        throw new ApiError(501,"Something went wrong")
+    }
+
+    return res
+           .status(200)
+           .json(new ApiResponse(200,"Video deleted Successfully"))
 })
 
 

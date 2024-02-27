@@ -30,16 +30,15 @@ const uploadOnCloudinary = async (localFilePath) => {
 const deleteFromCloudinary = async (oldFilePath) => {
     try {
 
-        console.log(oldFilePath);
-        const result = await cloudinary.uploader.destroy(oldFilePath)
-        console.log("Printing result ", result);
-        // fs.unlinkSync(oldFilePath)
+        // const result1 = await cloudinary.uploader.resource(oldFilePath)
+        const result = await cloudinary.uploader.destroy(oldFilePath,{
+            resource_type: 'auto'
+        })
+        console.log("result1 at cloudinary.js",oldFilePath);
         return result;
 
     } catch (error) {
-        // console.log(oldFilePath);
-        console.log(error);
-        // fs.unlinkSync(oldFilePath)
+
         return;
     }
 }
