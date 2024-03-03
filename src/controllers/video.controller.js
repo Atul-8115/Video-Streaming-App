@@ -1,3 +1,4 @@
+import mongoose, {isValidObjectId} from "mongoose";
 import { Video } from "../models/video.model.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/AppResponse.js";
@@ -9,7 +10,32 @@ import { v2 as cloudinary } from "cloudinary"
 
 
 const getAllVideos = asyncHandler(async (req,res) => {
+    const { page = 1, limit = 10, query = "", sortBy = 'createdAt', sortType=1, userId } = req.query
 
+    if(!userId) {
+        throw new ApiError(400, "No user id found. Please provide valid user id to search for related videos.")
+    }
+    // prepare video query
+    const videoQuery = {
+        owner: userId,
+        $or: [
+            {
+                title: {$regex: query, $options: 'i'}
+            },
+            {
+                description: {$regex: query, $options: 'i'}
+            }
+        ]
+    }
+
+    // prepare sot criteria
+    const sortCriteria = {}
+    sortCriteria[sortBy] = sortType
+
+    // find videos based on query, sort criteria, pagination
+    const videos = await Video.find(videoQuery).sort(sortCriteria).skip((page-1)*limit).limit(limit)
+
+    return res.status(200).json(new ApiResponse(200, videos, "Video fetched for the given criteria successfully"))
 })
 
 const publishVideo = asyncHandler(async (req,res) => {

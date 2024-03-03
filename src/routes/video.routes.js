@@ -12,7 +12,6 @@ import { upload } from "../middlewares/multer.midleware.js"
 const router = Router()
 router.use(verifyJWT); // Apply verifyJWT midleware to all routes in this file
 
-// router.route("/getallvideos").get(getAllVideos);
 router
     .route("/")
     .get(getAllVideos)
