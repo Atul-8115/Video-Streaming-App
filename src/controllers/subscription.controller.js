@@ -38,11 +38,43 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const {channelId} = req.params
+    if(!channelId) {
+        throw new ApiError(400,"Bad request")
+    }
+
+    const subscribers = await Subscription.find({channel: channelId})
+
+    if(subscribers.length == 0) {
+        return res
+               .status(200)
+               .json(new ApiResponse(200,"You have not subscribed any channel."))
+    }
+
+    const subcribersCount = subscribers.length
+    return res
+           .status(201)
+           .json(new ApiResponse(201,subscribers,subcribersCount,"Subscribed channels fetched successfully."))
 })
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { subscriberId } = req.params
+    if(!subscriberId) {
+        throw new ApiError(400,"Bad request")
+    }
+
+    const channelsSubscribed = await Subscription.find({subcriber: subscriberId})
+
+    if(channelsSubscribed.length == 0) {
+        return res
+               .status(200)
+               .json(new ApiResponse(200,"You have not subscribed any channel."))
+    }
+
+    const subcribedCount = channelsSubscribed.length
+    return res
+           .status(201)
+           .json(new ApiResponse(201,channelsSubscribed,subcribedCount,"Subscribed channels fetched successfully."))
 })
 
 export {
