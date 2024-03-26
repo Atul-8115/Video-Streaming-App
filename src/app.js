@@ -22,6 +22,7 @@ import videoRouter from './routes/video.routes.js'
 import healthcheckRouter from './routes/healthcheck.router.js'
 import tweetRouter from './routes/tweet.router.js'
 import subscriptionRouter from "./routes/subscription.routes.js"
+// import playlistRouter from "./routes/playlist.router.js"
 
 // routes declaration
 app.use("/api/v1/healthcheck",healthcheckRouter)

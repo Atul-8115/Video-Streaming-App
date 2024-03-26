@@ -372,6 +372,7 @@ const getUserChannelProfile = asyncHandler(async (req,res) => {
             }
         },
         {
+            // For counting subscribers
             $lookup: {
                 from: "subscriptions",
                 localField: "_id",
@@ -380,6 +381,7 @@ const getUserChannelProfile = asyncHandler(async (req,res) => {
             }
         },
         {
+            // For counting channels
             $lookup: {
                 from: "subscriptions",
                 localField: "_id",
