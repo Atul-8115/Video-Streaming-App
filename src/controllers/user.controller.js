@@ -354,7 +354,7 @@ const updateUserCoverImage = asyncHandler(async (req,res) => {
 
 
 
-const getUsserChannelProfile = asyncHandler(async (req,res) => {
+const getUserChannelProfile = asyncHandler(async (req,res) => {
     const { username } = req.params
 
     console.log(username);
@@ -373,7 +373,7 @@ const getUsserChannelProfile = asyncHandler(async (req,res) => {
         },
         {
             $lookup: {
-                from: "subcriptions",
+                from: "subscriptions",
                 localField: "_id",
                 foreignField: "channel",
                 as: "subscribers"
@@ -381,7 +381,7 @@ const getUsserChannelProfile = asyncHandler(async (req,res) => {
         },
         {
             $lookup: {
-                from: "subcriptions",
+                from: "subscriptions",
                 localField: "_id",
                 foreignField: "subscriber",
                 as: "subscribedTo"
@@ -389,7 +389,7 @@ const getUsserChannelProfile = asyncHandler(async (req,res) => {
         },
         {
             $addFields: {
-                subcriberCount: {
+                subscribersCount: {
                     $size: "$subscribers"
                 },
                 channelsSubscribedToCount: {
@@ -406,14 +406,15 @@ const getUsserChannelProfile = asyncHandler(async (req,res) => {
         },
         {
             $project: {
-                fullname: 1,
+                fullName: 1,
                 username: 1,
-                subcriberCount: 1,
+                subscribersCount: 1,
                 channelsSubscribedToCount: 1,
                 isSubscribed: 1,
                 avatar: 1,
                 coverImage: 1,
                 email: 1
+
             }
         }
     ])
@@ -422,6 +423,7 @@ const getUsserChannelProfile = asyncHandler(async (req,res) => {
         throw new ApiError(401, "channel does not exist")
     }
 
+    console.log("Printing channel: ",channel)
     return res
     .status(200)
     .json(new ApiResponse(200, channel[0], "User channel fetched successfully"))
@@ -493,6 +495,6 @@ export {
     updateAccountDetails,
     updateUserAvatar,
     updateUserCoverImage,
-    getUsserChannelProfile,
+    getUserChannelProfile,
     getWatchHistory
 }
