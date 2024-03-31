@@ -416,7 +416,6 @@ const getUserChannelProfile = asyncHandler(async (req,res) => {
                 avatar: 1,
                 coverImage: 1,
                 email: 1
-
             }
         }
     ])
@@ -425,7 +424,7 @@ const getUserChannelProfile = asyncHandler(async (req,res) => {
         throw new ApiError(401, "channel does not exist")
     }
 
-    console.log("Printing channel: ",channel)
+    // console.log("Printing channel: ",channel)
     return res
     .status(200)
     .json(new ApiResponse(200, channel[0], "User channel fetched successfully"))
